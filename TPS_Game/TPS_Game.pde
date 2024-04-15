@@ -45,12 +45,12 @@ void draw() {
     enemyY += 6;  //enemy speed
   }
   
-  if(enemyY <= 650) {
+  if(enemyY <= 900) {
     moveDown = true;
   }
-  if(enemyY > 650) {
+  if(enemyY > 900) {
     enemyY = 0;
-    enemyX = random(30, 670); //randomly generate enemies
+    enemyX = random(30, 970); //randomly generate enemies
     moveDown = true;
     scoreE++; //// enemies get one pointenemies get one point
   }
