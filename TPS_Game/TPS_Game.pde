@@ -1,107 +1,110 @@
-/*
-A simple TPS game
-*/
+// Global variables
+float gunX; // initial position of gun
+float bulletX, bulletY; // initial position of bullet
 
-float gunX = 350; //initial position of gun
-float bulletX = 355, bulletY = 940; //initial position of bullet
+float enemyX, enemyY; // initial position of enemy
 
-float enemyX = 350, enemyY = 0; //initial position of enemy
-
-boolean moveDown = true, moveUp = false; //enemy starts moving down, bullet starts not moving
+boolean moveDown = true, moveUp = false; // enemy starts moving down, bullet starts not moving
 
 boolean bullet = true;
-boolean bang = false; //if bullet hits enemy
+boolean bang = false; // if bullet hits enemy
 
-int scoreE = 0; // score of E
-int scoreP = 0; // score of player 
+int scoreE = 0; // score of Enemies
+int scoreP = 0; // score of Player
 
-PFont font; //scoreboard font
+PFont font; // scoreboard font
 PImage enemy;
 PImage gun;
 PImage fire;
 
 void setup() {
-  size(1000, 1000);  //board size
-  background(255);
-  font = loadFont("DINCondensed-Bold-48.vlw"); //add font
+  fullScreen(); // Set the size of the canvas
   
-  enemy = loadImage("enemy.png");;
+  // board size, consider using fullScreen() for full-screen applications
+  background(255);
+  font = loadFont("DINCondensed-Bold-48.vlw"); // add font
+
+  enemy = loadImage("enemy.png");
   gun = loadImage("gun.png");
   fire = loadImage("fire.png");
+
+  // Initialize positions based on screen size
+  gunX = width * 0.35;
+  bulletX = gunX + width * 0.095;
+  bulletY = height * 0.9;
+
+  enemyX = width * 0.35;
+  enemyY = height * 0.1;
 }
 
 void draw() {
   background(255);
   textFont(font);
-  
-  if(keyPressed && key == CODED && keyCode == LEFT && gunX > -77) {
-    gunX -= 25;
+
+  // Control gun movement within screen bounds
+  if (keyPressed && key == CODED) {
+    if (keyCode == LEFT && gunX > 0) {
+      gunX -= 25;
+    } else if (keyCode == RIGHT && gunX < width - width * 0.116) {
+      gunX += 25;
+    }
   }
-  if(keyPressed && key == CODED && keyCode == RIGHT && gunX < 900) {
-    gunX += 25;
-  }
-  
-  if(moveDown == true) {
-    enemyY += 6;  //enemy speed
-  }
-  
-  if(enemyY <= 900) {
-    moveDown = true;
-  }
-  if(enemyY > 900) {
+
+  // Update positions
+  enemyY += height * 0.006;
+
+  if (enemyY > height * 0.9) {
     enemyY = 0;
-    enemyX = random(30, 970); //randomly generate enemies
-    moveDown = true;
-    scoreE++; //// enemies get one pointenemies get one point
+    enemyX = random(30, width - 30);
+    scoreE++;
   }
-  
-  if(keyPressed && key == ' ') { //press space to shoot
-    moveUp = true; // player shoots bullet
+
+  if (keyPressed && key == ' ') {
+    moveUp = true;
   }
-  
-  if(moveUp) {
-    bulletY -= 100;
+
+  if (moveUp) {
+    bulletY -= height * 0.1;
   }
-  
-  if(bulletY < 10) {
-    bulletY = 940;
+
+  if (bulletY < 10) {
+    bulletY = height * 0.94;
     moveUp = false;
   }
-  
-  if(enemyY-50 < bulletY && bulletY < enemyY+50 && enemyX-20 < bulletX && bulletX < enemyX+95) { // bullet kill an enemy
+
+  if (enemyY - 50 < bulletY && bulletY < enemyY + 50 && enemyX - 20 < bulletX && bulletX < enemyX + 95) {
     bang = true;
   }
-  
-  if(bang) {
-    image(fire, gunX+50, 300, 112, 112);
-    enemyY -= 60;
+
+  if (bang) {
+    image(fire, gunX + width * 0.05, height * 0.5, width * 0.112, height * 0.186);
+    enemyY -= height * 0.06;
   }
-  if(bang && enemyY < 10) {
+
+  if (bang && enemyY < 10) {
     enemyY = 0;
-    enemyX = random(30, 670); //randomly generate enemies
-    bang = false; 
+    enemyX = random(30, width - 30);
+    bang = false;
     moveDown = true;
-    scoreP++; // player get one point
+    scoreP++;
     bulletY = 0;
   }
-  
-  fill(0); //black
-  textSize(30); 
-  text("Press Left/Right to move, Space to fire", 330, 35);
-  
-  fill(0, 255, 0);  //green
-  image(enemy, enemyX, enemyY, 100, 100); //enemy
+
+  // Display elements
+  textSize(30);
+  text("Press Left/Right to move, Space to fire", width * 0.33, height * 0.058);
+
+  image(enemy, enemyX, enemyY, width * 0.1, height * 0.1);
   textSize(56);
-  text("Enemies:", 50, 50);
-  text(scoreE, 220, 50);
-  
-  fill(255, 0, 0);  //red
-  image(gun, gunX, 830, 116, 179); //enemy
+  text("Enemies:", width * 0.05, height * 0.083);
+  text(scoreE, width * 0.22, height * 0.083);
+
+  image(gun, gunX, height * 0.83, width * 0.116, height * 0.298);
   textSize(56);
-  text("Player:", 750, 50);
-  text(scoreP, 890, 50);
-  
-  bulletX = gunX + 95;
-  fill(0, 0, 255); //blue
+  text("Player:", width * 0.75, height * 0.083);
+  text(scoreP, width * 0.89, height * 0.083);
+
+  bulletX = gunX + width * 0.095;
+  fill(0, 0, 255); // blue
   rect(bulletX, bulletY, 5, 25); // bullet hidden in gun
 }
