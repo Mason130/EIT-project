@@ -102,8 +102,9 @@ void draw() {
 
     image(enemy, enemyX, enemyY, width * 0.1, height * 0.1);
     textSize(56);
-    text("Enemies: " + scoreE, width * 0.05, height * 0.083);
-    text("Player: " + scoreP + " Lives: " + playerLives, width * 0.75, height * 0.083);
+    //text("Enemies: " + scoreE, width * 0.05, height * 0.083);
+    text("Player Lives: " + playerLives, width * 0.05, height * 0.083);
+    text("Player Scores: " + scoreP, width * 0.75, height * 0.083);
 
     image(gun, gunX, height * 0.83, width * 0.116, height * 0.298);
     textSize(56);
