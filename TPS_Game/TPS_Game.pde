@@ -47,6 +47,7 @@ void setup() {
 }
 
 void draw() {
+   if (!gameOver) {
   background(255);
   textFont(font);
   
@@ -55,10 +56,17 @@ void draw() {
       if (data != null) {
         data = data.trim(); // Remove any whitespace
         String[] parts = split(data, ','); // Split the data by comma
-        float yAccel = ((int)(float(parts[1]) / 50 + 0.5)) * 50.0;
+        float yAccel = ((int)(float(parts[1])));
+        float dx = -yAccel/10.0;
         //float yAccel = float(parts[1])/1023.0;
-        println(yAccel);
-        gunX = map(yAccel, -500, 500, width - width * 0.116, 0);
+        //println(yAccel);
+        if (gunX + dx >width - width * 0.116){
+          gunX = width - width * 0.116;
+        }else if( gunX + dx <= 0){
+          gunX = 0;
+        }
+        gunX += dx;
+        //gunX = map(yAccel, -500, 500, width - width * 0.116, 0);
         float force = float(parts[2]);
         if (force > 500)
           shot = true;
