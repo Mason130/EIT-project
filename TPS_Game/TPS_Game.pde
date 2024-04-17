@@ -1,5 +1,9 @@
 // Global variables
+import processing.serial.*;
+Serial myPort;
+
 float gunX; // initial position of gun
+float gundX, gundY;
 float bulletX, bulletY; // initial position of bullet
 
 float enemyX, enemyY; // initial position of enemy
@@ -8,6 +12,7 @@ boolean moveDown = true, moveUp = false; // enemy starts moving down, bullet sta
 
 boolean bullet = true;
 boolean bang = false; // if bullet hits enemy
+boolean shot = false; //check whether bullet is shot
 
 int scoreE = 0; // score of Enemies
 int scoreP = 0; // score of Player
@@ -36,12 +41,31 @@ void setup() {
 
   enemyX = width * 0.35;
   enemyY = height * 0.1;
+  
+  String portName = Serial.list()[0];  // first port from the list. Make sure to have the right serial port
+  myPort = new Serial(this, portName, 115200);  // opening the serial port
 }
 
 void draw() {
-  if (!gameOver) {
-    background(255);
-    textFont(font);
+  background(255);
+  textFont(font);
+  
+  if (myPort.available() > 0) {
+      String data = myPort.readStringUntil('\n');
+      if (data != null) {
+        data = data.trim(); // Remove any whitespace
+        String[] parts = split(data, ','); // Split the data by comma
+        float yAccel = ((int)(float(parts[1]) / 50 + 0.5)) * 50.0;
+        //float yAccel = float(parts[1])/1023.0;
+        println(yAccel);
+        gunX = map(yAccel, -500, 500, width - width * 0.116, 0);
+        float force = float(parts[2]);
+        if (force > 500)
+          shot = true;
+         else
+           shot = false;
+      }
+  }
 
     // Control gun movement within screen bounds
     if (keyPressed && key == CODED) {
@@ -65,9 +89,9 @@ void draw() {
       }
     }
 
-    if (keyPressed && key == ' ') {
-      moveUp = true;
-    }
+  if (shot) {
+    moveUp = true;
+  }
 
     if (moveUp) {
       bulletY -= height * 0.1;
