@@ -30,6 +30,8 @@ float moveSpeed;
 boolean gameOver = false; // To track if the game is over
 int playerLives = 6; // Player's life count
 
+boolean canShoot = false, canChangeGun = false;
+
 void setup() {
   size(950, 650);  //board size
   background(255);
@@ -43,7 +45,7 @@ void setup() {
   enemyLives = 6;
   initLives = enemyLives;
   
-  gunSelection = 2;   // select different fighters
+  gunSelection = 0;   // select different fighters
   // Initialize positions based on screen size
   gunX = width * 0.35;
   bulletY = height * 0.9;
@@ -58,13 +60,14 @@ void setup() {
 void draw() {
   if (!gameOver) {
     background(255);
+    textFont(font);
     
-    if(gunSelection == 1){
+    if(gunSelection % 3 == 0){
       image(gun, gunX, 570, 111, 81); //gun
       bulletX = gunX + 55;
       moveSpeed = 11;
       gunPower = 2;
-    } else if(gunSelection == 2) {
+    } else if(gunSelection % 3 == 1) {
       image(gun2, gunX, 585, 102, 63); //gun2
       bulletX = gunX + 50;
       moveSpeed = 19;
@@ -75,9 +78,6 @@ void draw() {
       moveSpeed = 6;
       gunPower = 6;
     }
-    
-    fill(0, 0, 255); //blue
-    rect(bulletX, bulletY, 1, 45); // bullet hidden in gun
     
     /*
     Controlled by controller
@@ -97,8 +97,8 @@ void draw() {
           gunX = 0;
         }
         
-        if(gunSelection == 1) gunX += dx;
-        else if(gunSelection == 2) gunX += 2 * dx;
+        if(gunSelection % 3 == 0) gunX += dx;
+        else if(gunSelection % 3 == 1) gunX += 2 * dx;
         else gunX += 0.5 * dx;
         
         float force = float(parts[2]);
@@ -110,8 +110,8 @@ void draw() {
     }
     
     // Control gun movement within screen bounds
-    if (keyPressed && key == CODED) {
-      if (keyCode == LEFT && gunX > -30) {
+    if (keyPressed) {
+      if (keyCode == LEFT && gunX > -20) {
         gunX -= moveSpeed;
       } else if (keyCode == RIGHT && gunX < width - width * 0.1) {
         gunX += moveSpeed;
@@ -125,16 +125,12 @@ void draw() {
     }
     if (enemyY > height * 0.9) {
       enemyY = 0;
-      enemyX = random(30, width - 30);
+      enemyX = random(30, width - 60);
       scoreE++;
       playerLives--; // Decrement life when an enemy is missed
       if (playerLives <= 0) {
         gameOver = true; // Game over when no lives left
       }
-    }
-  
-    if(keyPressed && key == ' ') { //press space to shoot
-      moveUp = true; // player shoots bullet
     }
     
     if (shot) {
@@ -159,19 +155,23 @@ void draw() {
     if (enemyLives == 0) {
       enemyLives = initLives;
       enemyY = 0;
-      enemyX = random(30, width-30);
+      enemyX = random(30, width-60);
       moveDown = true;
       scoreP++; // Increment score when an enemy is hit
     }
-    textFont(font);
+    
     fill(0);
     textSize(35);
     text("Player Lives: " + playerLives, width * 0.1, height * 0.08);
     text("Score: " + scoreP, width * 0.75, height * 0.08);
+    textSize(25);
+    text("Press spacebar to fire, w/W to switch fighters", width * 0.32, height * 0.06);
     image(enemy, enemyX, enemyY, 100, 62); //enemy
     fill(0,128,0);
-    textSize(25);
     text(enemyLives + "/" +initLives, enemyX+40, enemyY-10);
+    
+    fill(255, 0, 0); //red
+    rect(bulletX, bulletY, 2, 45); // bullet hidden in gun
   } else {
     // Game Over
     background(0);
@@ -179,6 +179,30 @@ void draw() {
     fill(255, 0, 0);
     text("GAME OVER", width * 0.4, height * 0.5);
     textSize(40);
-    text("Final Score: " + scoreP, width * 0.45, height * 0.6);
+    text("Final Score: " + scoreP, width * 0.41, height * 0.6);
+  }
+}
+
+// Detect when keys are pressed
+void keyPressed() {
+  if (key == ' ') {
+    if (canShoot) {
+      moveUp = true; // Trigger shooting
+      canShoot = false; // Prevent continuous shooting
+    }
+  } else if (key == 'w' || key == 'W') {
+    if (canChangeGun) {
+      gunSelection++; // Change the gun
+      canChangeGun = false; // Prevent rapid changing
+    }
+  }
+}
+
+// Detect when keys are released
+void keyReleased() {
+  if (key == ' ') {
+    canShoot = true; // Allow shooting again
+  } else if (key == 'w' || key == 'W') {
+    canChangeGun = true; // Allow changing guns again
   }
 }
