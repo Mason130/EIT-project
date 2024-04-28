@@ -1,6 +1,7 @@
 /*
 A simple TPS game
 */
+import java.util.*;
 import processing.serial.*;
 Serial myPort;
 float gunX; //initial position of gun
@@ -53,7 +54,7 @@ void setup() {
   enemyX = width * 0.35;
   enemyY = height * 0.1;
   
-  String portName = Serial.list()[2];  // first port from the list. Make sure to have the right serial port
+  String portName = Serial.list()[3];  // first port from the list. Make sure to have the right serial port
   myPort = new Serial(this, portName, 115200);  // opening the serial port
 }
 
@@ -97,12 +98,18 @@ void draw() {
           gunX = 0;
         }
         
+        String button = parts[3].trim();
+        if("1".equals(button)){ 
+          gunSelection++;
+        }
+        System.out.println(gunSelection);
         if(gunSelection % 3 == 0) gunX += dx;
         else if(gunSelection % 3 == 1) gunX += 2 * dx;
         else gunX += 0.5 * dx;
         
         float force = float(parts[2]);
-        if (force > 500)
+        //System.out.println(force);
+        if (force == 0)
           shot = true;
          else
            shot = false;
