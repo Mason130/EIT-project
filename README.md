@@ -11,4 +11,4 @@ https://github.com/Mason130/EIT-project/assets/78917758/771a6c4a-5023-4a7b-bcbb-
 
 `playing by human`
 
-
+https://github.com/Mason130/EIT-project/assets/78917758/71472127-fc52-4fdd-92b2-8432b37e4ef8
